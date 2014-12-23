@@ -26,13 +26,15 @@
 #
 
 es.logger.level: INFO
-rootLogger: INFO, console, file
+rootLogger: INFO, console, file, flume
 
 # ----- Configuration set by Chef ---------------------------------------------
 <% node.elasticsearch[:logging].sort.each do |key, value| %>
 logger.<%= key %>: <%= value %>
 <% end %>
 # -----------------------------------------------------------------------------
+
+debug: true
 
 additivity:
   index.search.slowlog: false
@@ -49,14 +51,29 @@ appender:
     type: rollingFile
     file: ${path.logs}/${cluster.name}.log
     maxBackupIndex: <%= node.elasticsearch[:logging]['maxage'] %>
+    maxFileSize: <%= node.elasticsearch[:logging]['maxsize'] %>
     layout:
       type: pattern
       conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
+  flume:
+    type: com.gilt.flume.log4j.FlumeLog4jV1Appender
+    flumeAgents: "<%= node.elasticsearch[:flume][:agents] %>"
+    batchSize: 100
+    reportingWindow: 10000
+    application: "<%= node.elasticsearch[:flume][:application] %>"
+    type: "<%= node.elasticsearch[:flume][:type] %>"
+    flumeProperties: "<%= node.elasticsearch[:flume][:properties] %>"
+    layout:
+      type: pattern
+      conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
+
 
   index_search_slow_log_file:
     type: rollingFile
     file: ${path.logs}/${cluster.name}_index_search_slowlog.log
     maxBackupIndex: <%= node.elasticsearch[:logging]['maxage'] %>
+    maxFileSize: <%= node.elasticsearch[:logging]['maxsize'] %>
     layout:
       type: pattern
       conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
@@ -65,6 +82,7 @@ appender:
     type: rollingFile
     file: ${path.logs}/${cluster.name}_index_indexing_slowlog.log
     maxBackupIndex: <%= node.elasticsearch[:logging]['maxage'] %>
+    maxFileSize: <%= node.elasticsearch[:logging]['maxsize'] %>
     layout:
       type: pattern
       conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
