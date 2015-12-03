@@ -13,4 +13,4 @@ cookbook 'minitest-handler', git: 'https://github.com/btm/minitest-handler-cookb
 
 cookbook 'flume', git: 'https://github.com/gilt/cookbook-flume.git'
 cookbook "r53", git: 'https://github.com/gilt/cookbook-route53.git'
-cookbook 'kibana_lwrp', git: 'https://github.com/gilt/chef-kibana.git', ref: 'v2.0.4'
+cookbook 'kibana_lwrp', git: 'https://github.com/gilt/chef-kibana.git', ref: '2.0.4'
